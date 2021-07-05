@@ -14,7 +14,7 @@ const ballRadius = 10;
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI*2, false);
-    ctx.fillStyle = "#00f7ff";
+    ctx.fillStyle = "#5FD6FF";
     ctx.fill();
     ctx.closePath();
 }
@@ -67,6 +67,12 @@ function collisionDetection() {
                     cy = -cy;
                     //충돌하면 더이상 벽돌을 띄우지 않기
                     b.status = 0;
+                    //점수 올리기
+                    score++
+                    if(score == brickColumn*brickRow) {
+                        alert("YOU WIN! CONGRATULATIONS!")
+                        document.location.reload();
+                    }
                 }
             }
         }
@@ -82,7 +88,7 @@ let paddleX = (canvas.width-paddleWidth) / 2;
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#ff00b7";
+    ctx.fillStyle = "#FF84DA";
     ctx.fill();
     ctx.closePath();
 }
@@ -114,6 +120,18 @@ function keyUpHandler(event) {
 }
 
 
+//score 만들기
+let score = 0;
+function drawScore() {
+    ctx.font = "16px, Arial";
+    ctx.fillStyle = "#FF3636";
+    ctx.fillText("Score : " + score, 8, 20);
+}
+
+//life 만들기
+let life = 3;
+
+
 //실행
 function draw() {
     //캔버스 내용 지우기
@@ -122,6 +140,7 @@ function draw() {
     drawBricks();
     drawBall();
     drawPaddle();
+    drawScore();
     collisionDetection();
     //벽에 공이 부딪혔을때 튕겨지게 하기
     if(x + cx > canvas.width - ballRadius || x + cx < ballRadius) {
@@ -137,10 +156,10 @@ function draw() {
             cy = -cy
         } 
         else {
-        //패들 밖으로 부딪혔을 때 game over 띄우기
-        alert("GAME OVER");
-        //현재 페이지 새로고침 해서 처음으로 돌아가기
-        document.location.reload();
+            //패들 밖으로 부딪혔을 때 game over 띄우기
+            alert("GAME OVER");
+            //현재 페이지 새로고침 해서 처음으로 돌아가기
+            document.location.reload();
         }
     }
     //오른쪽키, 왼쪽키 눌렀을 때 paddle이 이동하게 해주기
