@@ -3,6 +3,7 @@ const canvas = document.getElementById('myCanvas'),
 
 //캔버스 내 위치구조는 좌상단에서 시작된다
 
+
 //공 만들기
 let x = canvas.width/2;
 let y = canvas.height - 30;
@@ -17,6 +18,61 @@ function drawBall() {
     ctx.fill();
     ctx.closePath();
 }
+
+
+//brick 만들기
+const brickRow = 3;
+const brickColumn = 5;
+const brickWidth = 75;
+const brickHeight = 20;
+const brickPadding = 10;
+const brickOffsetTop = 30;
+const brickOffsetLeft = 30;
+
+let bricks = [];
+for(let c = 0; c < brickColumn; c++) {
+    bricks[c] = [];
+    for(let r = 0; r < brickRow; r++) {
+        bricks[c][r] = {x : 0, y : 0, status : 1};
+    }
+} 
+
+function drawBricks() {
+    for(let c = 0; c < brickColumn; c++) {
+        for(let r = 0; r < brickRow; r++) {
+            if(bricks[c][r].status == 1) {
+                let brickX = (c*(brickWidth + brickPadding)) + brickOffsetLeft;
+                let brickY = (r*(brickHeight + brickPadding)) + brickOffsetTop;
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = "#81FF89";
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+    }
+}
+
+//벽돌에 공이 닿았는지 충돌 감지 하기
+function collisionDetection() {
+    for(let c = 0; c < brickColumn; c++) {
+        for(let r = 0; r < brickRow; r++) {
+            let b = bricks[c][r];
+            if(b.status == 1) {
+                //벽돌 안에 공이 닿았을 경우
+                if(x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                    //충돌하면 y 방향 바꿔주기
+                    cy = -cy;
+                    //충돌하면 더이상 벽돌을 띄우지 않기
+                    b.status = 0;
+                }
+            }
+        }
+    }
+}
+
 
 //paddle 만들기
 const paddleWidth = 75;
@@ -57,12 +113,16 @@ function keyUpHandler(event) {
     }
 }
 
+
 //실행
 function draw() {
     //캔버스 내용 지우기
-    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    drawBricks();
     drawBall();
     drawPaddle();
+    collisionDetection();
     //벽에 공이 부딪혔을때 튕겨지게 하기
     if(x + cx > canvas.width - ballRadius || x + cx < ballRadius) {
         cx = -cx;
