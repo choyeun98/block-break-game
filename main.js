@@ -128,8 +128,24 @@ function drawScore() {
     ctx.fillText("Score : " + score, 8, 20);
 }
 
-//life 만들기
-let life = 3;
+
+//lives 만들기
+let lives = 3;
+function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#FF3636";
+    ctx.fillText("Lives : " + lives, canvas.width - 65, 20);
+}
+
+
+//마우스로 paddle 조종하기
+canvas.addEventListener("mousemove", mouseMoveHandler);
+
+function mouseMoveHandler(e) {
+    if(e.clientX > 0 && e.clientX < canvas.width) {
+        paddleX = e.clientX - paddleWidth / 2;
+    }
+}
 
 
 //실행
@@ -142,6 +158,7 @@ function draw() {
     drawPaddle();
     drawScore();
     collisionDetection();
+    drawLives();
     //벽에 공이 부딪혔을때 튕겨지게 하기
     if(x + cx > canvas.width - ballRadius || x + cx < ballRadius) {
         cx = -cx;
@@ -156,10 +173,20 @@ function draw() {
             cy = -cy
         } 
         else {
-            //패들 밖으로 부딪혔을 때 game over 띄우기
-            alert("GAME OVER");
-            //현재 페이지 새로고침 해서 처음으로 돌아가기
-            document.location.reload();
+            lives--;
+            if(!lives) {
+                //패들 밖으로 부딪혔을 때 game over 띄우기
+                alert("GAME OVER");
+                //현재 페이지 새로고침 해서 처음으로 돌아가기
+                document.location.reload();
+            }
+            else {
+                x = canvas.width / 2;
+                y = canvas.height - 30;
+                cx = 2;
+                cy = -2;
+                paddleX = (canvas.width - paddleWidth) / 2;
+            }
         }
     }
     //오른쪽키, 왼쪽키 눌렀을 때 paddle이 이동하게 해주기
